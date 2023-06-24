@@ -20,7 +20,7 @@ type Name = {
 
 export type IAdmin = {
   name: Name;
-  phoneNumber: number;
+  phoneNumber: string;
   role: "admin";
   password: string;
   address: string;
