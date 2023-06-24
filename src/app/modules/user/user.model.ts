@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { UserRole } from "./user.constant";
 import { IUser, UserModel } from "./user.interface";
 
