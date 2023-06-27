@@ -26,4 +26,17 @@ export type IAdmin = {
   address: string;
 };
 
-export type AdminModel = Model<IAdmin, Record<string, unknown>>;
+export type ILoginAdmin = {
+  phoneNumber: string;
+  password: string;
+};
+
+export interface IAdminMethods {
+  isAdminExists(phoneNumber: string): Promise<Partial<IAdmin | null>>;
+  isPasswordMatched(
+    givenPassword: string,
+    savedPassword: string
+  ): Promise<boolean>;
+}
+
+export type AdminModel = Model<IAdmin, Record<string, unknown>, IAdminMethods>;

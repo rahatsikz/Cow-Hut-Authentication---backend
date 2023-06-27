@@ -1,7 +1,9 @@
 import { Schema, model } from "mongoose";
-import { AdminModel, IAdmin } from "./admin.interface";
+import { AdminModel, IAdmin, IAdminMethods } from "./admin.interface";
+import bcrypt from "bcrypt";
+import config from "../../../config";
 
-const adminSchema = new Schema<IAdmin>(
+const adminSchema = new Schema<IAdmin, AdminModel, IAdminMethods>(
   {
     name: {
       firstName: {
@@ -44,5 +46,21 @@ const adminSchema = new Schema<IAdmin>(
     },
   }
 );
+
+adminSchema.methods.isAdminExists = async function (phoneNumber: string) {
+  return await Admin.findOne({ phoneNumber }, { _id: 1, role: 1, password: 1 });
+};
+
+adminSchema.methods.isPasswordMatched = async function (
+  givenPassword: string,
+  savedPassword: string
+) {
+  return await bcrypt.compare(givenPassword, savedPassword);
+};
+
+adminSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(this.password, Number(config.salt_rounds));
+  next();
+});
 
 export const Admin = model<IAdmin, AdminModel>("Admin", adminSchema);
