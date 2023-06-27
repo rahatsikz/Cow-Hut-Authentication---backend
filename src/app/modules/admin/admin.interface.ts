@@ -24,6 +24,7 @@ export type IAdmin = {
   role: "admin";
   password: string;
   address: string;
+  _id?: string;
 };
 
 export type ILoginAdmin = {
@@ -32,7 +33,7 @@ export type ILoginAdmin = {
 };
 
 export interface IAdminMethods {
-  isAdminExists(phoneNumber: string): Promise<Partial<IAdmin | null>>;
+  isAdminExists(phoneNumber: string): Promise<Partial<IAdmin> | null>;
   isPasswordMatched(
     givenPassword: string,
     savedPassword: string

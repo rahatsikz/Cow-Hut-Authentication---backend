@@ -4,6 +4,7 @@ import { sendResponse } from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { IAdmin } from "./admin.interface";
 import { AdminService } from "./admin.service";
+import config from "../../../config";
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const { ...admin } = req.body;
@@ -18,6 +19,29 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const loginAdmin = catchAsync(async (req: Request, res: Response) => {
+  const { ...loginData } = req.body;
+
+  const result = await AdminService.loginAdmin(loginData);
+
+  const { refreshToken, ...others } = result;
+
+  const cookieOption = {
+    secure: config.env === "Production",
+    httpOnly: true,
+  };
+
+  res.cookie("refreshToken", refreshToken, cookieOption);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin logged in Successfully",
+    data: others,
+  });
+});
+
 export const AdminController = {
   createAdmin,
+  loginAdmin,
 };
