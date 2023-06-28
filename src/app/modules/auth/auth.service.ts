@@ -49,7 +49,41 @@ const loginUser = async (payload: ILoginUser) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  let verifiedToken = null;
+
+  try {
+    verifiedToken = jwtHelpers.verifyToken(
+      token,
+      config.jwt.refresh_secret as Secret
+    );
+  } catch (error) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid refresh Token");
+  }
+
+  const { _id } = verifiedToken;
+
+  const isUserExists = await User.findOne({ _id });
+  if (!isUserExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const newAccessToken = jwtHelpers.createToken(
+    {
+      _id: isUserExists._id,
+      role: isUserExists.role,
+    },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+
+  return {
+    accessToken: newAccessToken,
+  };
+};
+
 export const AuthService = {
   createUser,
   loginUser,
+  refreshToken,
 };

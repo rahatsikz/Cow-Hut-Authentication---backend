@@ -42,7 +42,28 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+
+  const result = await AuthService.refreshToken(refreshToken);
+
+  const cookieOption = {
+    secure: config.env === "Production",
+    httpOnly: true,
+  };
+
+  res.cookie("refreshToken", refreshToken, cookieOption);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "New access token generated successfully !",
+    data: result,
+  });
+});
+
 export const AuthController = {
   createUser,
   loginUser,
+  refreshToken,
 };
