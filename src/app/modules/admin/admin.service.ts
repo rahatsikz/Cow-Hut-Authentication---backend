@@ -47,7 +47,41 @@ const loginAdmin = async (payload: ILoginAdmin) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  let verifiedToken = null;
+
+  try {
+    verifiedToken = jwtHelpers.verifyToken(
+      token,
+      config.jwt.refresh_secret as Secret
+    );
+  } catch (error) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid refresh Token");
+  }
+
+  const { _id } = verifiedToken;
+
+  const isAdminExists = await Admin.findOne({ _id });
+  if (!isAdminExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
+  }
+
+  const newAccessToken = jwtHelpers.createToken(
+    {
+      _id: isAdminExists._id,
+      role: isAdminExists.role,
+    },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+
+  return {
+    accessToken: newAccessToken,
+  };
+};
+
 export const AdminService = {
   createAdmin,
   loginAdmin,
+  refreshToken,
 };

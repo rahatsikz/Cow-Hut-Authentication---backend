@@ -41,7 +41,28 @@ const loginAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+
+  const result = await AdminService.refreshToken(refreshToken);
+
+  const cookieOption = {
+    secure: config.env === "Production",
+    httpOnly: true,
+  };
+
+  res.cookie("refreshToken", refreshToken, cookieOption);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "refresh token retrieved Successfully",
+    data: result,
+  });
+});
+
 export const AdminController = {
   createAdmin,
   loginAdmin,
+  refreshToken,
 };

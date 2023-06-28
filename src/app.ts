@@ -6,10 +6,12 @@ import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import mongoose from "mongoose";
 import httpStatus from "http-status";
 import routes from "../src/app/routes/index";
+import cookieParser from "cookie-parser";
 
 const app: Application = express();
 
 app.use(cors());
+app.use(cookieParser());
 
 // parser
 app.use(express.json());
