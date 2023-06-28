@@ -22,6 +22,14 @@ const createUserZodSchema = z.object({
   }),
 });
 
+const loginZodSchema = z.object({
+  body: z.object({
+    phoneNumber: z.string({ required_error: "Phone number is required" }),
+    password: z.string({ required_error: "password is required" }),
+  }),
+});
+
 export const AuthValidate = {
   createUserZodSchema,
+  loginZodSchema,
 };

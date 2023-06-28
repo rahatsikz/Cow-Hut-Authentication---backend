@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
 import { UserRole } from "./user.constant";
-import { IUser, UserModel } from "./user.interface";
+import { IUser, IUserMethods, UserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
     name: {
       firstName: {
@@ -50,6 +50,17 @@ const userSchema = new Schema<IUser>(
     },
   }
 );
+
+userSchema.methods.isUserExists = async function (phoneNumber: string) {
+  return await User.findOne({ phoneNumber }, { _id: 1, role: 1, password: 1 });
+};
+
+userSchema.methods.isPasswordMatched = async function (
+  givenPassword: string,
+  savedPassword: string
+) {
+  return await bcrypt.compare(givenPassword, savedPassword);
+};
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, Number(config.salt_rounds));
