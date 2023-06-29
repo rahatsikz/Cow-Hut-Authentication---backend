@@ -6,6 +6,9 @@ import { sendResponse } from "../../../shared/sendResponse";
 import { CowService } from "./cow.service";
 import { pick } from "../../../shared/pick";
 import { cowFilterableFields, paginationFields } from "./cow.constant";
+import { AuthenticatedRequest } from "../../middleware/auth";
+import { RequestHandler, ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 const createCow = catchAsync(async (req: Request, res: Response) => {
   const { ...cow } = req.body;
@@ -45,11 +48,21 @@ const getSingleCow = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateSingleCow = catchAsync(async (req: Request, res: Response) => {
+const updateSingleCow: RequestHandler<
+  ParamsDictionary,
+  any,
+  any,
+  ParsedQs,
+  Record<string, any>
+> = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const { ...updateCowData } = req.body;
 
-  const result = await CowService.updateSingleCow(id, updateCowData);
+  const { user } = req as AuthenticatedRequest;
+
+  console.log(user);
+
+  const result = await CowService.updateSingleCow(id, updateCowData, user);
 
   sendResponse<ICow>(res, {
     statusCode: httpStatus.OK,
@@ -61,7 +74,9 @@ const updateSingleCow = catchAsync(async (req: Request, res: Response) => {
 
 const deleteCow = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const result = await CowService.deleteCow(id);
+  const { user } = req as AuthenticatedRequest;
+
+  const result = await CowService.deleteCow(id, user);
   sendResponse<ICow>(res, {
     statusCode: httpStatus.OK,
     success: true,

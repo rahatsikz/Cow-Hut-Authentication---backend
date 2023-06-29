@@ -4,7 +4,8 @@ import httpStatus from "http-status";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import config from "../../config";
 import { Secret } from "jsonwebtoken";
-import { RequestHandler } from "express";
+
+// import { RequestHandler } from "express";
 
 // Extend the Request interface
 export interface AuthenticatedRequest extends Request {

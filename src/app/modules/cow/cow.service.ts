@@ -8,6 +8,8 @@ import { IPaginationResponse } from "../../../interface/IPaginationResponse";
 import { object } from "zod";
 import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
+import { IUser } from "../user/user.interface";
+import { JwtPayload } from "jsonwebtoken";
 
 const createCow = async (payload: ICow): Promise<ICow> => {
   const result = (await Cow.create(payload)).populate("seller");
@@ -83,11 +85,21 @@ const getSingleCow = async (id: string): Promise<ICow | null> => {
 
 const updateSingleCow = async (
   id: string,
-  payload: Partial<ICow>
+  payload: Partial<ICow>,
+  user: JwtPayload
 ): Promise<ICow | null> => {
   const isExists = await Cow.findById(id);
   if (!isExists) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User can not be found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Cow can not be found");
+  }
+
+  const userId = user._id;
+  // console.log({ userId });
+
+  // console.log(isExists.seller.toString());
+
+  if (userId !== isExists.seller.toString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
   }
 
   const result = await Cow.findOneAndUpdate({ _id: id }, payload, {
@@ -97,7 +109,22 @@ const updateSingleCow = async (
   return result;
 };
 
-const deleteCow = async (id: string) => {
+const deleteCow = async (id: string, user: JwtPayload) => {
+  const isExists = await Cow.findById(id);
+  if (!isExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Cow can not be found");
+  }
+
+  const userId = user._id;
+
+  // console.log({ userId });
+
+  // console.log(isExists.seller.toString());
+
+  if (userId !== isExists.seller.toString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  }
+
   const result = await Cow.findByIdAndDelete(id);
   return result;
 };
