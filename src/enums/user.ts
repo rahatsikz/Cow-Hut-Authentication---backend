@@ -1,5 +1,5 @@
 export enum ENUM_USER_ROLE {
-  Admin = "admin",
-  Seller = "seller",
-  Buyer = "buyer",
+  ADMIN = "admin",
+  SELLER = "seller",
+  BUYER = "buyer",
 }

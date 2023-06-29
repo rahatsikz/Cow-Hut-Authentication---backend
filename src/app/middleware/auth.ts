@@ -4,9 +4,15 @@ import httpStatus from "http-status";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import config from "../../config";
 import { Secret } from "jsonwebtoken";
+import { RequestHandler } from "express";
+
+// Extend the Request interface
+export interface AuthenticatedRequest extends Request {
+  user: any;
+}
 
 export const auth = (...requiredRoles: string[]) => {
-  async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
       if (!token) {
@@ -17,7 +23,7 @@ export const auth = (...requiredRoles: string[]) => {
 
       verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret);
 
-      req.user = verifiedUser;
+      (req as AuthenticatedRequest).user = verifiedUser;
 
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
         throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
