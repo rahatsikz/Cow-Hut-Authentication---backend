@@ -58,7 +58,7 @@ const createOrder = async (payload: IOrder) => {
 
     const newOrderSeller = await User.create([cowSeller], { session });
 
-    const order: IOrder = {
+    const order = {
       cow: newOrderCow[0]._id,
       buyer: newOrderBuyer[0]._id,
     };
