@@ -4,6 +4,9 @@ import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import { JwtPayload } from "jsonwebtoken";
 import { Admin } from "../admin/admin.model";
+import { IAdmin } from "../admin/admin.interface";
+import config from "../../../config";
+import bcrypt from "bcrypt";
 
 const getAllUsers = async (): Promise<IUser[]> => {
   const result = await User.find({});
@@ -61,10 +64,36 @@ const getMyProfile = async (user: JwtPayload) => {
   }
 };
 
+const updateMyProfile = async (user: JwtPayload, payload: IUser | IAdmin) => {
+  const userRole = user.role;
+  const userId = user._id;
+  // console.log(userId);
+
+  if (payload.password) {
+    payload.password = await bcrypt.hash(
+      payload.password,
+      Number(config.salt_rounds)
+    );
+  }
+
+  if (userRole === "admin") {
+    const result = await Admin.findByIdAndUpdate(userId, payload, {
+      new: true,
+    });
+    return result;
+  } else if (userRole === "seller" || userRole === "buyer") {
+    const result = await User.findByIdAndUpdate(userId, payload, {
+      new: true,
+    });
+    return result;
+  }
+};
+
 export const UserService = {
   getAllUsers,
   getSingleUser,
   updateSingleUser,
   deleteUser,
   getMyProfile,
+  updateMyProfile,
 };
