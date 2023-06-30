@@ -94,8 +94,20 @@ const createOrder = async (payload: IOrder) => {
   return orderData;
 };
 
-const getAllOrders = async (): Promise<IOrder[]> => {
-  const result = await Order.find({}).populate([
+const getAllOrders = async (user: JwtPayload): Promise<IOrder[]> => {
+  let findConditions = {};
+
+  if (user.role === "buyer") {
+    findConditions = { buyer: user._id };
+  } else if (user.role === "admin") {
+    findConditions = {};
+  } else if (user.role === "seller") {
+    const cows = await Cow.find({ seller: user._id });
+    const cowIds = cows.map((cow) => cow._id);
+    findConditions = { cow: { $in: cowIds } };
+  }
+
+  const result = await Order.find(findConditions).populate([
     {
       path: "cow",
     },
