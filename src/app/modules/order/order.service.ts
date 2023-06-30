@@ -6,6 +6,7 @@ import { IOrder } from "./order.interface";
 import { Order } from "./order.model";
 import mongoose from "mongoose";
 import { Label } from "../cow/cow.constant";
+import { JwtPayload } from "jsonwebtoken";
 
 const createOrder = async (payload: IOrder) => {
   //   const result = await Order.create(payload);
@@ -105,7 +106,41 @@ const getAllOrders = async (): Promise<IOrder[]> => {
   return result;
 };
 
+const getSingleOrder = async (id: string, user: JwtPayload) => {
+  const isExists = await Order.findById(id);
+
+  if (!isExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Order can not be found");
+  }
+  const userId = user._id;
+  const userRole = user.role;
+
+  if (userRole === "buyer" && userId !== isExists.buyer.toString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  }
+
+  const OrderedCow = await Cow.findOne({ _id: isExists.cow });
+
+  console.log(OrderedCow?.seller.toString());
+
+  if (userRole === "seller" && userId !== OrderedCow?.seller.toString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  }
+
+  const result = await Order.findById(id).populate([
+    {
+      path: "cow",
+    },
+    {
+      path: "buyer",
+    },
+  ]);
+
+  return result;
+};
+
 export const OrderService = {
   createOrder,
   getAllOrders,
+  getSingleOrder,
 };
