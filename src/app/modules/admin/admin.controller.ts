@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import { IAdmin } from "./admin.interface";
 import { AdminService } from "./admin.service";
 import config from "../../../config";
+import { AuthenticatedRequest } from "../../middleware/auth";
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const { ...admin } = req.body;
@@ -61,8 +62,23 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+  const { user } = req as AuthenticatedRequest;
+
+  // console.log({ user });
+
+  const result = await AdminService.getMyProfile(user);
+  sendResponse<IAdmin>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User's information retrieved successfully",
+    data: result,
+  });
+});
+
 export const AdminController = {
   createAdmin,
   loginAdmin,
   refreshToken,
+  getMyProfile,
 };

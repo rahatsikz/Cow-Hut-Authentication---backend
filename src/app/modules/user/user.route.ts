@@ -9,13 +9,13 @@ const router = express.Router();
 
 router.get(
   "/my-profile",
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.BUYER, ENUM_USER_ROLE.SELLER),
+  auth(ENUM_USER_ROLE.BUYER, ENUM_USER_ROLE.SELLER),
   UserController.getMyProfile
 );
 
 router.patch(
   "/my-profile",
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.BUYER, ENUM_USER_ROLE.SELLER),
+  auth(ENUM_USER_ROLE.BUYER, ENUM_USER_ROLE.SELLER),
   UserController.updateMyProfile
 );
 

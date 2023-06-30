@@ -4,7 +4,7 @@ import { IAdmin, ILoginAdmin } from "./admin.interface";
 import { Admin } from "./admin.model";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import config from "../../../config";
-import { Secret } from "jsonwebtoken";
+import { JwtPayload, Secret } from "jsonwebtoken";
 
 const createAdmin = async (payload: IAdmin): Promise<IAdmin> => {
   const createdAdmin = await Admin.create(payload);
@@ -80,8 +80,18 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const getMyProfile = async (user: JwtPayload) => {
+  // const userRole = user.role;
+  const userId = user._id;
+  // console.log(userId);
+
+  const result = await Admin.findById(userId);
+  return result;
+};
+
 export const AdminService = {
   createAdmin,
   loginAdmin,
   refreshToken,
+  getMyProfile,
 };

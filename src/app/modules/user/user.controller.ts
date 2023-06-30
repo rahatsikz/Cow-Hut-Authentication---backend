@@ -59,7 +59,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   // console.log({ user });
 
   const result = await UserService.getMyProfile(user);
-  sendResponse(res, {
+  sendResponse<IUser>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User's information retrieved successfully",
@@ -72,7 +72,7 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   const { ...updateData } = req.body;
 
   const result = await UserService.updateMyProfile(user, updateData);
-  sendResponse(res, {
+  sendResponse<IUser>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User's information updated successfully",

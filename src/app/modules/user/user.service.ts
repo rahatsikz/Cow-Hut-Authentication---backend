@@ -50,43 +50,41 @@ const deleteUser = async (id: string) => {
 };
 
 const getMyProfile = async (user: JwtPayload) => {
-  const userRole = user.role;
+  // const userRole = user.role;
   const userId = user._id;
   // console.log(userId);
 
-  if (userRole === "admin") {
-    const result = await Admin.findById(userId);
-
-    return result;
-  } else if (userRole === "seller" || userRole === "buyer") {
-    const result = await User.findById(userId);
-    return result;
-  }
+  const result = await User.findById(userId);
+  return result;
 };
 
 const updateMyProfile = async (user: JwtPayload, payload: IUser | IAdmin) => {
-  const userRole = user.role;
+  // const userRole = user.role;
   const userId = user._id;
   // console.log(userId);
 
-  if (payload.password) {
-    payload.password = await bcrypt.hash(
-      payload.password,
+  const { name, ...userData } = payload;
+
+  if (userData.password) {
+    userData.password = await bcrypt.hash(
+      userData.password,
       Number(config.salt_rounds)
     );
   }
 
-  if (userRole === "admin") {
-    const result = await Admin.findByIdAndUpdate(userId, payload, {
-      new: true,
+  const userDataUpdate = { ...userData };
+
+  if (name && Object.keys(name).length) {
+    Object.keys(name).forEach((key) => {
+      const nameKey = `name.${key}`;
+      (userDataUpdate as any)[nameKey] = name[key as keyof typeof name];
     });
-    return result;
-  } else if (userRole === "seller" || userRole === "buyer") {
-    const result = await User.findByIdAndUpdate(userId, payload, {
-      new: true,
-    });
-    return result;
   }
+
+  const result = await User.findByIdAndUpdate(userId, userDataUpdate, {
+    new: true,
+  });
+  return result;
 };
 
 export const UserService = {
