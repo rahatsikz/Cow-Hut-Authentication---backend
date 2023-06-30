@@ -13,6 +13,12 @@ router.get(
   AdminController.getMyProfile
 );
 
+router.patch(
+  "/my-profile",
+  auth(ENUM_USER_ROLE.ADMIN),
+  AdminController.updateMyProfile
+);
+
 router.post(
   "/create-admin",
   validateRequest(AdminValidate.createAdminZodSchema),

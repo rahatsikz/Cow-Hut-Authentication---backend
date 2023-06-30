@@ -58,7 +58,7 @@ const getMyProfile = async (user: JwtPayload) => {
   return result;
 };
 
-const updateMyProfile = async (user: JwtPayload, payload: IUser | IAdmin) => {
+const updateMyProfile = async (user: JwtPayload, payload: IUser) => {
   // const userRole = user.role;
   const userId = user._id;
   // console.log(userId);

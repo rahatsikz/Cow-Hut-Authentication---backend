@@ -71,7 +71,20 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IAdmin>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "User's information retrieved successfully",
+    message: "Admin's information retrieved successfully",
+    data: result,
+  });
+});
+
+const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
+  const { user } = req as AuthenticatedRequest;
+  const { ...updateData } = req.body;
+
+  const result = await AdminService.updateMyProfile(user, updateData);
+  sendResponse<IAdmin>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin's information updated successfully",
     data: result,
   });
 });
@@ -81,4 +94,5 @@ export const AdminController = {
   loginAdmin,
   refreshToken,
   getMyProfile,
+  updateMyProfile,
 };

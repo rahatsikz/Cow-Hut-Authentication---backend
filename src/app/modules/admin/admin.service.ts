@@ -5,6 +5,7 @@ import { Admin } from "./admin.model";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import config from "../../../config";
 import { JwtPayload, Secret } from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const createAdmin = async (payload: IAdmin): Promise<IAdmin> => {
   const createdAdmin = await Admin.create(payload);
@@ -89,9 +90,39 @@ const getMyProfile = async (user: JwtPayload) => {
   return result;
 };
 
+const updateMyProfile = async (user: JwtPayload, payload: IAdmin) => {
+  // const userRole = user.role;
+  const userId = user._id;
+  // console.log(userId);
+
+  const { name, ...userData } = payload;
+
+  if (userData.password) {
+    userData.password = await bcrypt.hash(
+      userData.password,
+      Number(config.salt_rounds)
+    );
+  }
+
+  const userDataUpdate = { ...userData };
+
+  if (name && Object.keys(name).length) {
+    Object.keys(name).forEach((key) => {
+      const nameKey = `name.${key}`;
+      (userDataUpdate as any)[nameKey] = name[key as keyof typeof name];
+    });
+  }
+
+  const result = await Admin.findByIdAndUpdate(userId, userDataUpdate, {
+    new: true,
+  });
+  return result;
+};
+
 export const AdminService = {
   createAdmin,
   loginAdmin,
   refreshToken,
   getMyProfile,
+  updateMyProfile,
 };
