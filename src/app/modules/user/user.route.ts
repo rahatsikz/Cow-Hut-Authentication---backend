@@ -7,6 +7,8 @@ import { ENUM_USER_ROLE } from "../../../enums/user";
 
 const router = express.Router();
 
+router.get("/my-profile", auth(), UserController.getMyProfile);
+
 router.get("/:id", auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
 router.patch(
   "/:id",

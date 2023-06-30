@@ -2,6 +2,8 @@ import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiError";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
+import { JwtPayload } from "jsonwebtoken";
+import { Admin } from "../admin/admin.model";
 
 const getAllUsers = async (): Promise<IUser[]> => {
   const result = await User.find({});
@@ -44,9 +46,25 @@ const deleteUser = async (id: string) => {
   return result;
 };
 
+const getMyProfile = async (user: JwtPayload) => {
+  const userRole = user.role;
+  const userId = user._id;
+  // console.log(userId);
+
+  if (userRole === "admin") {
+    const result = await Admin.findById(userId);
+
+    return result;
+  } else if (userRole === "seller" || userRole === "buyer") {
+    const result = await User.findById(userId);
+    return result;
+  }
+};
+
 export const UserService = {
   getAllUsers,
   getSingleUser,
   updateSingleUser,
   deleteUser,
+  getMyProfile,
 };
