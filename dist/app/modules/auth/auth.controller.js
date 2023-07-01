@@ -28,6 +28,7 @@ const catchAsync_1 = require("../../../shared/catchAsync");
 const auth_service_1 = require("./auth.service");
 const sendResponse_1 = require("../../../shared/sendResponse");
 const http_status_1 = __importDefault(require("http-status"));
+const config_1 = __importDefault(require("../../../config"));
 const createUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = __rest(req.body, []);
     const result = yield auth_service_1.AuthService.createUser(user);
@@ -38,6 +39,39 @@ const createUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+const loginUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const loginData = __rest(req.body, []);
+    const result = yield auth_service_1.AuthService.loginUser(loginData);
+    const { refreshToken } = result, others = __rest(result, ["refreshToken"]);
+    const cookieOption = {
+        secure: config_1.default.env === "Production",
+        httpOnly: true,
+    };
+    res.cookie("refreshToken", refreshToken, cookieOption);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User logged in Successfully",
+        data: others,
+    });
+}));
+const refreshToken = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { refreshToken } = req.cookies;
+    const result = yield auth_service_1.AuthService.refreshToken(refreshToken);
+    const cookieOption = {
+        secure: config_1.default.env === "Production",
+        httpOnly: true,
+    };
+    res.cookie("refreshToken", refreshToken, cookieOption);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "New access token generated successfully !",
+        data: result,
+    });
+}));
 exports.AuthController = {
     createUser,
+    loginUser,
+    refreshToken,
 };

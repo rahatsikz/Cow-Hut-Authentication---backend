@@ -8,6 +8,7 @@ const user_route_1 = require("../modules/user/user.route");
 const cow_route_1 = require("../modules/cow/cow.route");
 const order_route_1 = require("../modules/order/order.route");
 const auth_route_1 = require("../modules/auth/auth.route");
+const admin_route_1 = require("../modules/admin/admin.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -17,6 +18,10 @@ const moduleRoutes = [
     {
         path: "/auth",
         route: auth_route_1.AuthRoutes,
+    },
+    {
+        path: "/admins",
+        route: admin_route_1.AdminRoutes,
     },
     {
         path: "/cows",

@@ -23,78 +23,79 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.AdminController = void 0;
 const catchAsync_1 = require("../../../shared/catchAsync");
 const sendResponse_1 = require("../../../shared/sendResponse");
 const http_status_1 = __importDefault(require("http-status"));
-const user_service_1 = require("./user.service");
-const getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserService.getAllUsers();
+const admin_service_1 = require("./admin.service");
+const config_1 = __importDefault(require("../../../config"));
+const createAdmin = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = __rest(req.body, []);
+    const result = yield admin_service_1.AdminService.createAdmin(admin);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Users retrieved Successfully",
+        message: "Admin created Successfully",
         data: result,
     });
 }));
-const getSingleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const result = yield user_service_1.UserService.getSingleUser(id);
+const loginAdmin = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const loginData = __rest(req.body, []);
+    const result = yield admin_service_1.AdminService.loginAdmin(loginData);
+    const { refreshToken } = result, others = __rest(result, ["refreshToken"]);
+    const cookieOption = {
+        secure: config_1.default.env === "Production",
+        httpOnly: true,
+    };
+    res.cookie("refreshToken", refreshToken, cookieOption);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "User retrieved Successfully",
-        data: result,
+        message: "Admin logged in Successfully",
+        data: others,
     });
 }));
-const updateSingleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const updateUserData = __rest(req.body, []);
-    const result = yield user_service_1.UserService.updateSingleUser(id, updateUserData);
+const refreshToken = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { refreshToken } = req.cookies;
+    const result = yield admin_service_1.AdminService.refreshToken(refreshToken);
+    const cookieOption = {
+        secure: config_1.default.env === "Production",
+        httpOnly: true,
+    };
+    res.cookie("refreshToken", refreshToken, cookieOption);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "User updated Successfully",
-        data: result,
-    });
-}));
-const deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const result = yield user_service_1.UserService.deleteUser(id);
-    (0, sendResponse_1.sendResponse)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "User deleted Successfully",
+        message: "New access token generated successfully !",
         data: result,
     });
 }));
 const getMyProfile = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user } = req;
     // console.log({ user });
-    const result = yield user_service_1.UserService.getMyProfile(user);
+    const result = yield admin_service_1.AdminService.getMyProfile(user);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "User's information retrieved successfully",
+        message: "Admin's information retrieved successfully",
         data: result,
     });
 }));
 const updateMyProfile = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user } = req;
     const updateData = __rest(req.body, []);
-    const result = yield user_service_1.UserService.updateMyProfile(user, updateData);
+    const result = yield admin_service_1.AdminService.updateMyProfile(user, updateData);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "User's information updated successfully",
+        message: "Admin's information updated successfully",
         data: result,
     });
 }));
-exports.UserController = {
-    getAllUsers,
-    getSingleUser,
-    updateSingleUser,
-    deleteUser,
+exports.AdminController = {
+    createAdmin,
+    loginAdmin,
+    refreshToken,
     getMyProfile,
     updateMyProfile,
 };

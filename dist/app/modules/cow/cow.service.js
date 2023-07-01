@@ -82,17 +82,33 @@ const getSingleCow = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield cow_model_1.Cow.findById(id).populate("seller");
     return result;
 });
-const updateSingleCow = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateSingleCow = (id, payload, user) => __awaiter(void 0, void 0, void 0, function* () {
     const isExists = yield cow_model_1.Cow.findById(id);
     if (!isExists) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User can not be found");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Cow can not be found");
+    }
+    const userId = user._id;
+    // console.log({ userId });
+    // console.log(isExists.seller.toString());
+    if (userId !== isExists.seller.toString()) {
+        throw new ApiError_1.default(http_status_1.default.FORBIDDEN, "Forbidden");
     }
     const result = yield cow_model_1.Cow.findOneAndUpdate({ _id: id }, payload, {
         new: true,
     }).populate("seller");
     return result;
 });
-const deleteCow = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteCow = (id, user) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExists = yield cow_model_1.Cow.findById(id);
+    if (!isExists) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Cow can not be found");
+    }
+    const userId = user._id;
+    // console.log({ userId });
+    // console.log(isExists.seller.toString());
+    if (userId !== isExists.seller.toString()) {
+        throw new ApiError_1.default(http_status_1.default.FORBIDDEN, "Forbidden");
+    }
     const result = yield cow_model_1.Cow.findByIdAndDelete(id);
     return result;
 });
