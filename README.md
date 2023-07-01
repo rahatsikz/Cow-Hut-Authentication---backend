@@ -37,3 +37,13 @@
 
 - Create Order by buyer (Post) : https://cow-hut-digital-auth.vercel.app/api/v1/orders/create-order
 - Get All Orders by Admin, Specific Buyer and Seller (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/orders
+
+### Bonus Part
+
+- Get specific user profile (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/users/my-profile
+- Update specific user profile (Patch) : https://cow-hut-digital-auth.vercel.app/api/v1/users/my-profile
+
+- Get Admin Profile (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/admins/my-profile
+- Update Admin Profile (Patch) : https://cow-hut-digital-auth.vercel.app/api/v1/admins/my-profile
+
+- Get Single Order by Admin, Specific Buyer and Seller (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/orders/64a03357c631e1d0b2ca56e6

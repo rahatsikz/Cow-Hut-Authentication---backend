@@ -68,6 +68,7 @@ userSchema.methods.isPasswordMatched = async function (
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, Number(config.salt_rounds));
+  next();
 });
 
 export const User = model<IUser, UserModel>("User", userSchema);
