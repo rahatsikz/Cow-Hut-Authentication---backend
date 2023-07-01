@@ -32,3 +32,8 @@
 - Get Single Cow by Seller, Buyer, Admin (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/cows/648d7ceae0842107b364dd8c
 - Update Cow by Seller (Patch) : https://cow-hut-digital-auth.vercel.app/api/v1/cows/64a00c135aa1ac12b491efe1
 - Delete Cow by Seller (Delete) : https://cow-hut-digital-auth.vercel.app/api/v1/cows/64a0141225917cb7223e45f7
+
+### Orders
+
+- Create Order by buyer (Post) : https://cow-hut-digital-auth.vercel.app/api/v1/orders/create-order
+- Get All Orders by Admin, Specific Buyer and Seller (Get) : https://cow-hut-digital-auth.vercel.app/api/v1/orders
